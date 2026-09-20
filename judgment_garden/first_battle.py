@@ -6,8 +6,8 @@ imported implicitly.
 from dataclasses import dataclass
 
 from .game_agent import DecodedAction, make_agent
-from .kaggriculture_codec import decode, encode
-from .kaggriculture_state import read_hire_stop_state
+from .mainline.kaggriculture_codec import decode, encode
+from .mainline.kaggriculture_state import read_hire_stop_state
 
 
 @dataclass
