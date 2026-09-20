@@ -31,7 +31,7 @@ def main():
     print(f"CANDIDATE self={candidate[0]} opp={candidate[1]} margin={candidate[0]-candidate[1]}")
     print(f"DELTA self={candidate[0]-control[0]} margin={(candidate[0]-candidate[1])-(control[0]-control[1])}")
     t = garden_agent.garden_telemetry
-    print(f"TRACE cognition_cycles={t.cognition_cycles} changed_actions={t.changed_actions} hire_suppressions={t.hire_suppressions}")
+    print(f"TRACE bridge_calls={t.bridge_calls} decode_failures={t.decode_failures} cognition_cycles={t.cognition_cycles} changed_actions={t.changed_actions} hire_suppressions={t.hire_suppressions}")
 
 
 if __name__ == "__main__":
