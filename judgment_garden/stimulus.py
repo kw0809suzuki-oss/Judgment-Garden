@@ -32,15 +32,38 @@ def ingest_stimulus(stimuli: Iterable[Stimulus]) -> Tuple[StimulusQuestion, ...]
     for stimulus in stimuli:
         if stimulus.status != "MATERIAL":
             continue
-        # STIMULUS 001 contains a freshness difference. We do not transfer it
-        # as a tactic. We only expose the unresolved question it creates.
-        if "premise" in stimulus.observed_difference.lower() and "stale" in stimulus.observed_difference.lower():
+        difference = stimulus.observed_difference.lower()
+        if "premise" in difference and "stale" in difference:
             out.append(StimulusQuestion(
                 name="strategy_premise_freshness",
                 source_id=stimulus.stimulus_id,
                 executable=False,
                 reason="external_difference_opens_question_not_strategy",
             ))
+        if "not observed" in difference and ("not evidence" in difference or "absent" in difference):
+            out.append(StimulusQuestion(
+                name="unobserved_alternative_preservation",
+                source_id=stimulus.stimulus_id,
+                executable=False,
+                reason="missing_observation_opens_preservation_question",
+            ))
+    return tuple(out)
+
+
+def relate_questions(questions: Iterable[StimulusQuestion]) -> Tuple[StimulusQuestion, ...]:
+    questions = tuple(questions)
+    names = {q.name for q in questions}
+    out = list(questions)
+    if {
+        "strategy_premise_freshness",
+        "unobserved_alternative_preservation",
+    }.issubset(names):
+        out.append(StimulusQuestion(
+            name="recheck_alternatives_when_premise_changes",
+            source_id="RELATION-001",
+            executable=False,
+            reason="relation_candidate_from_two_external_differences",
+        ))
     return tuple(out)
 
 
@@ -50,7 +73,11 @@ def extend_candidate_space(
 ) -> Tuple[Candidate, ...]:
     out = list(candidates)
     for q in questions:
-        if q.name == "strategy_premise_freshness":
+        if q.name in {
+            "strategy_premise_freshness",
+            "unobserved_alternative_preservation",
+            "recheck_alternatives_when_premise_changes",
+        }:
             out.append(Candidate(
                 name=q.name,
                 contradicted=False,
