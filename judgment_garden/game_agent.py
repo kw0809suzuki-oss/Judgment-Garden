@@ -33,6 +33,8 @@ def make_agent(
         base_action = base_agent(obs)
         decoded = decode_action(base_action)
         if decoded is None:
+            if observe is not None:
+                observe(None, None, None)
             return base_action
 
         space, state = state_reader(obs, decoded)
