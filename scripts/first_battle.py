@@ -34,7 +34,14 @@ def main():
     control = play(counted(base.agent, control_calls), opponent)
     garden_agent = make_hire_stop_agent(base.agent)
     candidate_calls = {"calls": 0}
-    candidate = play(counted(garden_agent, candidate_calls), opponent)
+    # Keep the Garden wrapper as the direct callable. Kaggriculture treats
+    # nested closure wrappers as a one-shot/error boundary in this harness.
+    # Count entry on the Garden agent itself so the callable remains stable.
+    original_garden = garden_agent
+    def garden_entry(obs):
+        candidate_calls["calls"] += 1
+        return original_garden(obs)
+    candidate = play(garden_entry, opponent)
     print(f"GARDEN_FIRST_BATTLE seed=4142 seat=0 opponent=lonespear")
     print(f"CONTROL self={control[0]} opp={control[1]} margin={control[0]-control[1]}")
     print(f"CANDIDATE self={candidate[0]} opp={candidate[1]} margin={candidate[0]-candidate[1]}")
