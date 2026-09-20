@@ -18,12 +18,23 @@ def load(path, name):
     return mod
 
 
-def play(agent, opponent, seed=4142, seat=0):
-    env = make("kaggriculture", configuration={"seed": seed}, debug=False)
+def play(agent, opponent, seed=4142, seat=0, diagnose=False):
+    env = make("kaggriculture", configuration={"seed": seed}, debug=diagnose)
     agents = [opponent, opponent]
     agents[seat] = agent
     env.run(agents)
     rewards = [state.reward for state in env.state]
+    if diagnose:
+        final = env.state[seat]
+        print(f"RUNTIME final_status={final.status} final_reward={final.reward}")
+        for step_no, step in enumerate(env.steps):
+            state = step[seat]
+            if state.status != "ACTIVE":
+                print(f"RUNTIME first_non_active_step={step_no} status={state.status} reward={state.reward} action={state.action}")
+                info = getattr(state, "info", None)
+                if info:
+                    print(f"RUNTIME info={info}")
+                break
     return rewards[seat], rewards[1-seat]
 
 
@@ -41,7 +52,7 @@ def main():
     def garden_entry(obs):
         candidate_calls["calls"] += 1
         return original_garden(obs)
-    candidate = play(garden_entry, opponent)
+    candidate = play(garden_entry, opponent, diagnose=True)
     print(f"GARDEN_FIRST_BATTLE seed=4142 seat=0 opponent=lonespear")
     print(f"CONTROL self={control[0]} opp={control[1]} margin={control[0]-control[1]}")
     print(f"CANDIDATE self={candidate[0]} opp={candidate[1]} margin={candidate[0]-candidate[1]}")
