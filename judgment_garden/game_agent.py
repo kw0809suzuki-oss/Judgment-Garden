@@ -7,7 +7,7 @@ Without such a translator it returns the base action unchanged.
 from dataclasses import dataclass
 from typing import Callable, Optional
 
-from .cycle import cognition_cycle
+from .cycle import CycleResult, cognition_cycle
 from .generator import DirectionSpace
 from .trace import ActionSnapshot
 
@@ -27,6 +27,7 @@ def make_agent(
     state_reader: Callable[[dict, DecodedAction], tuple[DirectionSpace, ActionSnapshot]],
     decode_action: Decoder,
     encode_action: Encoder,
+    observe: Optional[Callable[[CycleResult, DecodedAction, DecodedAction], None]] = None,
 ):
     def agent(obs: dict):
         base_action = base_agent(obs)
@@ -43,6 +44,8 @@ def make_agent(
             market_action=result.decision.market_action,
             farmer_action=result.decision.farmer_action,
         )
+        if observe is not None:
+            observe(result, decoded, changed)
         return encode_action(changed, base_action)
 
     return agent
