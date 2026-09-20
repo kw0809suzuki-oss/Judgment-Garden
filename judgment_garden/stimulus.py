@@ -47,6 +47,13 @@ def ingest_stimulus(stimuli: Iterable[Stimulus]) -> Tuple[StimulusQuestion, ...]
                 executable=False,
                 reason="missing_observation_opens_preservation_question",
             ))
+        if "intake contract" in difference or ("re-entry" in difference and "testable" in difference):
+            out.append(StimulusQuestion(
+                name="explicit_evidence_request",
+                source_id=stimulus.stimulus_id,
+                executable=False,
+                reason="repeated_boundary_opens_evidence_request_question",
+            ))
     return tuple(out)
 
 
@@ -77,6 +84,7 @@ def extend_candidate_space(
             "strategy_premise_freshness",
             "unobserved_alternative_preservation",
             "recheck_alternatives_when_premise_changes",
+            "explicit_evidence_request",
         }:
             out.append(Candidate(
                 name=q.name,
