@@ -1,0 +1,29 @@
+name: Garden Learning Compare
+
+on:
+  push:
+    paths:
+      - '.garden/run-learning-compare'
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Kaggriculture runtime
+        run: |
+          python -m pip install --upgrade pip
+          pip install kaggle-environments
+      - name: Fetch isolated base and opponent
+        run: |
+          curl -fL --retry 3 -o base_agent.py https://raw.githubusercontent.com/kw0809suzuki-oss/relation-flow-agent/main/agent.py
+          curl -fL --retry 3 -o x_engine.py https://raw.githubusercontent.com/kw0809suzuki-oss/relation-flow-agent/main/x_engine.py
+          mkdir -p opponents
+          curl -fL --retry 3 -o opponents/lonespear.py https://raw.githubusercontent.com/lonespear/kaggriculture/774b26093ccf4246525517d48420349b841b6e50/main.py
+      - name: Compare before and after experience return
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python scripts/learning_compare.py
