@@ -21,6 +21,7 @@ jobs:
       - name: Fetch isolated base and opponent
         run: |
           curl -fL --retry 3 -o base_agent.py https://raw.githubusercontent.com/kw0809suzuki-oss/relation-flow-agent/main/agent.py
+          curl -fL --retry 3 -o x_engine.py https://raw.githubusercontent.com/kw0809suzuki-oss/relation-flow-agent/main/x_engine.py
           mkdir -p opponents
           curl -fL --retry 3 -o opponents/lonespear.py https://raw.githubusercontent.com/lonespear/kaggriculture/774b26093ccf4246525517d48420349b841b6e50/main.py
       - name: Run one paired seed
