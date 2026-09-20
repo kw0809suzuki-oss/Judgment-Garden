@@ -24,11 +24,14 @@ def main():
     base = load("base_agent.py", "garden_base")
     opponent = "opponents/lonespear.py"
     control = play(base.agent, opponent)
-    candidate = play(make_hire_stop_agent(base.agent), opponent)
+    garden_agent = make_hire_stop_agent(base.agent)
+    candidate = play(garden_agent, opponent)
     print(f"GARDEN_FIRST_BATTLE seed=4142 seat=0 opponent=lonespear")
     print(f"CONTROL self={control[0]} opp={control[1]} margin={control[0]-control[1]}")
     print(f"CANDIDATE self={candidate[0]} opp={candidate[1]} margin={candidate[0]-candidate[1]}")
     print(f"DELTA self={candidate[0]-control[0]} margin={(candidate[0]-candidate[1])-(control[0]-control[1])}")
+    t = garden_agent.garden_telemetry
+    print(f"TRACE cognition_cycles={t.cognition_cycles} changed_actions={t.changed_actions} hire_suppressions={t.hire_suppressions}")
 
 
 if __name__ == "__main__":
