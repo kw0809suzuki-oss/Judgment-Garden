@@ -2,6 +2,9 @@ name: Garden First Battle
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.garden/run-first-battle'
 
 jobs:
   first-battle:
