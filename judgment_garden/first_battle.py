@@ -15,12 +15,18 @@ class BattleTelemetry:
     cognition_cycles: int = 0
     changed_actions: int = 0
     hire_suppressions: int = 0
+    bridge_calls: int = 0
+    decode_failures: int = 0
 
 
 def make_hire_stop_agent(base_agent, telemetry=None):
     telemetry = telemetry or BattleTelemetry()
 
-    def observe(result, before: DecodedAction, after: DecodedAction):
+    def observe(result, before, after):
+        telemetry.bridge_calls += 1
+        if result is None:
+            telemetry.decode_failures += 1
+            return
         telemetry.cognition_cycles += 1
         if before != after:
             telemetry.changed_actions += 1
