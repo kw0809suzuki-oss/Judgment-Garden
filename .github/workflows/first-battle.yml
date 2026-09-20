@@ -24,4 +24,6 @@ jobs:
           mkdir -p opponents
           curl -fL --retry 3 -o opponents/lonespear.py https://raw.githubusercontent.com/lonespear/kaggriculture/774b26093ccf4246525517d48420349b841b6e50/main.py
       - name: Run one paired seed
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: python scripts/first_battle.py
