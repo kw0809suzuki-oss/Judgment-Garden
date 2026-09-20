@@ -3,15 +3,36 @@
 A concrete base agent must be supplied by the caller. No existing repository is
 imported implicitly.
 """
-from .game_agent import make_agent
+from dataclasses import dataclass
+
+from .game_agent import DecodedAction, make_agent
 from .kaggriculture_codec import decode, encode
 from .kaggriculture_state import read_hire_stop_state
 
 
-def make_hire_stop_agent(base_agent):
-    return make_agent(
+@dataclass
+class BattleTelemetry:
+    cognition_cycles: int = 0
+    changed_actions: int = 0
+    hire_suppressions: int = 0
+
+
+def make_hire_stop_agent(base_agent, telemetry=None):
+    telemetry = telemetry or BattleTelemetry()
+
+    def observe(result, before: DecodedAction, after: DecodedAction):
+        telemetry.cognition_cycles += 1
+        if before != after:
+            telemetry.changed_actions += 1
+        if before.market_action == "HIRE" and after.market_action == "PASS":
+            telemetry.hire_suppressions += 1
+
+    agent = make_agent(
         base_agent=base_agent,
         state_reader=read_hire_stop_state,
         decode_action=decode,
         encode_action=encode,
+        observe=observe,
     )
+    agent.garden_telemetry = telemetry
+    return agent
