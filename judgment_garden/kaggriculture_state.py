@@ -16,8 +16,8 @@ def read_hire_stop_state(obs: dict, decoded: DecodedAction):
         closure_active=closure_active,
         hire_observed=decoded.market_action == "HIRE",
         harvestable=False,
-        allow_hire_probe=True,
-        allow_harvest_probe=False,
+        allow_hire_suppression=True,
+        allow_early_harvest=False,
     )
     snapshot = ActionSnapshot(
         closure_active=closure_active,
