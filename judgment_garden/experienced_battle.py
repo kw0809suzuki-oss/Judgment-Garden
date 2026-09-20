@@ -11,7 +11,7 @@ from .decision import decide
 from .generator import DirectionSpace, generate_candidates
 from .game_agent import DecodedAction
 from .interventions import BLIND_TEST_001
-from .kaggriculture_codec import decode, encode
+from .mainline.kaggriculture_codec import decode, encode
 from .reentry import return_experience
 from .selector import choose_next
 from .trace import ActionSnapshot
